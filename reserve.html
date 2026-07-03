@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ส่งคำขอจองห้องพัก | The Base Hua Hin Apartment</title>
+<meta name="description" content="ส่งคำขอจองห้องพัก The Base Hua Hin Apartment อพาร์ทเมนท์ให้เช่ารายเดือน หัวหิน">
+<link rel="canonical" href="https://thebasehuahin.com/reserve.html">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/">
+      <img src="Images/thebase_logo.jpg" alt="The Base Hua Hin Apartment logo">
+      <span>The Base Hua Hin</span>
+    </a>
+    <nav class="main-nav">
+      <a href="/#rooms" data-i18n="nav_rooms">ห้องพัก</a>
+      <a href="/#amenities" data-i18n="nav_amenities">สิ่งอำนวยความสะดวก</a>
+      <a href="/#location" data-i18n="nav_location">ที่ตั้ง</a>
+      <a href="/#contact" data-i18n="nav_contact">ติดต่อเรา</a>
+    </nav>
+    <div class="lang-switch"></div>
+  </div>
+</header>
+
+<section style="padding-top:44px;">
+  <div class="container reserve-layout">
+    <div class="breadcrumb"><a href="/" data-i18n="back_home">กลับหน้าแรก</a></div>
+    <span class="eyebrow" data-i18n="reserve_eyebrow">ขอจองห้องพัก</span>
+    <h1 class="section-title" data-i18n="reserve_title">ส่งคำขอจองห้องพัก</h1>
+    <p class="section-sub" data-i18n="reserve_sub" style="margin-bottom:24px;">กรอกข้อมูลด้านล่าง ทีมงานจะติดต่อกลับเพื่อยืนยันรายละเอียดและแจ้งอัตราค่าเช่า</p>
+
+    <div class="reserve-note-box">
+      <span>ℹ️</span>
+      <span data-i18n="reserve_note_box">หมายเหตุ: นี่คือ "คำขอจอง" ไม่ใช่การยืนยันอัตโนมัติ เจ้าหน้าที่จะติดต่อกลับภายใน 24 ชั่วโมงเพื่อยืนยันห้องว่างและอัตราค่าเช่า</span>
+    </div>
+
+    <div id="reserve-form-wrap">
+      <form class="reserve-form" id="reserveForm">
+        <div class="field">
+          <label data-i18n="reserve_room_label">เลือกแบบห้อง</label>
+          <div class="room-choice" id="room-choice"></div>
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_name">ชื่อ-นามสกุล</label>
+          <input type="text" id="f-name" required>
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_phone">เบอร์โทรศัพท์</label>
+          <input type="tel" id="f-phone" required>
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_email">อีเมล (ถ้ามี)</label>
+          <input type="email" id="f-email">
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_movein">วันที่ต้องการเข้าพัก</label>
+          <input type="date" id="f-movein" required>
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_duration">ระยะเวลาเช่า</label>
+          <select id="f-duration">
+            <option value="1" data-i18n="reserve_dur_1">1 เดือน</option>
+            <option value="3" data-i18n="reserve_dur_3">3 เดือน</option>
+            <option value="6" data-i18n="reserve_dur_6">6 เดือน</option>
+            <option value="12" data-i18n="reserve_dur_12">12 เดือน</option>
+            <option value="12+" data-i18n="reserve_dur_more">มากกว่า 12 เดือน</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label data-i18n="reserve_note">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+          <textarea id="f-note" rows="3"></textarea>
+        </div>
+
+        <div id="form-error" style="color:#c0392b;font-size:13px;margin-bottom:10px;display:none;"></div>
+
+        <div class="reserve-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn" data-i18n="reserve_submit_btn">ส่งคำขอจอง</button>
+        </div>
+      </form>
+
+      <div class="reserve-alt-contact">
+        <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:2px;" data-i18n="reserve_alt_title">หรือติดต่อโดยตรง</div>
+        <div class="reserve-actions">
+          <a class="btn btn-outline btn-sm" href="tel:+66633497200" data-i18n="reserve_alt_call">โทรหาเรา</a>
+          <a class="btn btn-outline btn-sm" target="_blank" rel="noopener" href="https://www.facebook.com/p/The-Base-Hua-Hin-Apartment-100047218616189/" data-i18n="reserve_alt_fb">Facebook</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="reserve-success" class="reserve-form success-card" style="display:none;">
+      <div class="success-icon">🎉</div>
+      <h3 data-i18n="reserve_success_title">ส่งคำขอจองสำเร็จ! 🎉</h3>
+      <p data-i18n="reserve_success_msg">ทีมงาน The Base Hua Hin Apartment ได้รับคำขอจองของคุณแล้ว จะติดต่อกลับเพื่อยืนยันห้องว่างและอัตราค่าเช่าภายใน 24 ชั่วโมง</p>
+      <div class="success-summary" id="success-summary"></div>
+      <button class="btn btn-outline" onclick="location.reload()" data-i18n="reserve_new_btn">🔁 ส่งคำขออีกครั้ง</button>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container" style="text-align:center;">
+    <div class="foot-bottom" data-i18n="footer_rights">© 2026 The Base Hua Hin Apartment</div>
+  </div>
+</footer>
+
+<script src="js/rooms.js"></script>
+<script src="js/i18n.js"></script>
+<script>
+const API_URL = "https://REPLACE-ME.workers.dev/api/reserve";
+
+const params = new URLSearchParams(location.search);
+let selectedRoom = params.get("room") || ROOMS[0].id;
+
+function renderRoomChoice(){
+  const wrap = document.getElementById("room-choice");
+  if(!wrap) return;
+  wrap.innerHTML = ROOMS.map(r => `
+    <label class="${r.id === selectedRoom ? 'active' : ''}">
+      <input type="radio" name="room" value="${r.id}" ${r.id === selectedRoom ? 'checked' : ''} onchange="selectedRoom='${r.id}';renderRoomChoice();">
+      <span class="rc-title">${r.name[currentLang] || r.name.th}</span>
+      <span class="rc-sub">${t("room_floor_label")} ${r.floors} · ${r.sqm} ${t("room_sqm_label")}</span>
+    </label>
+  `).join("");
+}
+
+document.getElementById("reserveForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const errBox = document.getElementById("form-error");
+  errBox.style.display = "none";
+
+  const name = document.getElementById("f-name").value.trim();
+  const phone = document.getElementById("f-phone").value.trim();
+  const email = document.getElementById("f-email").value.trim();
+  const movein = document.getElementById("f-movein").value;
+  const duration = document.getElementById("f-duration").value;
+  const note = document.getElementById("f-note").value.trim();
+
+  if(!selectedRoom){
+    errBox.textContent = t("reserve_validation_room");
+    errBox.style.display = "block";
+    return;
+  }
+  if(!name || !phone){
+    errBox.textContent = t("reserve_validation_info");
+    errBox.style.display = "block";
+    return;
+  }
+  if(!movein){
+    errBox.textContent = t("reserve_validation_date");
+    errBox.style.display = "block";
+    return;
+  }
+
+  const submitBtn = document.getElementById("submit-btn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = t("reserve_sending");
+
+  const room = getRoom(selectedRoom);
+
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name, phone, email,
+        roomId: selectedRoom,
+        roomName: room.name.th,
+        moveInDate: movein,
+        duration,
+        note
+      })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "failed");
+
+    document.getElementById("reserve-form-wrap").style.display = "none";
+    document.getElementById("reserve-success").style.display = "block";
+    document.getElementById("success-summary").innerHTML = `
+      <div class="sr"><span>${t("reserve_success_room")}</span><span>${room.name[currentLang] || room.name.th}</span></div>
+      <div class="sr"><span>${t("reserve_success_movein")}</span><span>${movein}</span></div>
+      <div class="sr"><span>${t("reserve_success_duration")}</span><span>${duration === "12+" ? t("reserve_dur_more") : duration + " " + (currentLang === "th" ? "เดือน" : "mo")}</span></div>
+    `;
+  }catch(err){
+    errBox.textContent = t("reserve_err_fail");
+    errBox.style.display = "block";
+    submitBtn.disabled = false;
+    submitBtn.textContent = t("reserve_submit_btn");
+  }
+});
+
+renderRoomChoice();
+</script>
+</body>
+</html>

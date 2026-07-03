@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — The Base Hua Hin Apartment</title>
+<link rel="icon" href="/favicon.png" type="image/png">
+<script>
+const API_BASE = "https://REPLACE-ME.workers.dev";
+
+(function(){
+  if (!sessionStorage.getItem("dash_token")) {
+    document.addEventListener("DOMContentLoaded", function() {
+      document.body.style.display = "none";
+      var overlay = document.createElement("div");
+      overlay.id = "pin-overlay";
+      overlay.innerHTML = `
+        <div style="position:fixed;inset:0;background:#22333B;display:flex;align-items:center;justify-content:center;z-index:9999;">
+          <div style="background:#fff;border-radius:20px;padding:40px 32px;width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.3);">
+            <div style="font-size:32px;margin-bottom:8px;">🔐</div>
+            <h2 style="font-size:18px;font-weight:800;color:#22333B;margin-bottom:4px;">The Base Dashboard</h2>
+            <p style="font-size:13px;color:#888;margin-bottom:24px;">กรอก PIN เพื่อเข้าใช้งาน</p>
+            <input id="pin-input" type="password" inputmode="numeric" maxlength="6"
+              style="width:100%;text-align:center;font-size:28px;letter-spacing:8px;border:2px solid #e0e6e6;border-radius:12px;padding:12px;outline:none;color:#22333B;"
+              placeholder="••••••">
+            <p id="pin-error" style="color:#c0392b;font-size:13px;margin-top:12px;display:none;">PIN ไม่ถูกต้อง ลองใหม่อีกครั้ง</p>
+            <button onclick="checkPin()" style="margin-top:20px;width:100%;background:#1b8a8f;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">เข้าสู่ระบบ</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      document.body.style.display = "";
+      setTimeout(() => document.getElementById("pin-input").focus(), 100);
+      document.getElementById("pin-input").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") checkPin();
+      });
+    });
+  }
+  window.checkPin = async function() {
+    var input = document.getElementById("pin-input");
+    var errorEl = document.getElementById("pin-error");
+    errorEl.style.display = "none";
+    try {
+      const res = await fetch(API_BASE + "/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: input.value }),
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        sessionStorage.setItem("dash_token", data.token);
+        document.getElementById("pin-overlay").remove();
+        init();
+      } else {
+        errorEl.style.display = "";
+        input.value = ""; input.focus();
+      }
+    } catch (e) {
+      errorEl.textContent = "เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง";
+      errorEl.style.display = "";
+    }
+  };
+})();
+</script>
+<style>
+  :root {
+    --ink: #22333B;
+    --ink-2: #3d4f57;
+    --teal: #1b8a8f;
+    --coral: #e8836f;
+    --cream: #F4FBFB;
+    --cream-2: #E6F2F2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 { font-size: 17px; font-weight: 800; }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  #lastUpdated { font-size: 12px; opacity: 0.5; }
+  .refresh-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .refresh-btn:hover { background: rgba(255,255,255,0.22); }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .search-bar { margin-bottom: 20px; }
+  .search-bar input {
+    width: 100%; padding: 13px 18px; border-radius: 14px;
+    border: 1.5px solid var(--cream-2); font-family: inherit;
+    font-size: 14px; color: var(--ink); background: #fff;
+    box-shadow: 0 2px 12px rgba(34,51,59,0.07); outline: none; transition: border-color .2s;
+  }
+  .search-bar input:focus { border-color: var(--teal); }
+
+  .compare-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--cream-2);
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-label { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .compare-values { font-size: 12px; color: var(--ink-2); opacity: .6; margin-top: 2px; }
+  .compare-delta { font-weight: 800; padding: 5px 12px; border-radius: 999px; font-size: 12px; white-space: nowrap; }
+  .compare-delta.up { background: #d4edda; color: #155724; }
+  .compare-delta.down { background: #f8d7da; color: #842029; }
+  .compare-delta.flat { background: var(--cream-2); color: var(--ink); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 12px rgba(34,51,59,0.07);
+    cursor: pointer; transition: box-shadow .15s, transform .15s;
+  }
+  .stat-card:hover { box-shadow: 0 4px 20px rgba(34,51,59,0.14); transform: translateY(-2px); }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+    opacity: 0.6;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-unit { font-size: 13px; font-weight: 400; opacity: 0.45; margin-top: 4px; }
+  .stat-card.highlight { background: var(--ink); }
+  .stat-card.highlight .stat-label { color: #fff; }
+  .stat-card.highlight .stat-value { color: #fff; }
+  .stat-card.highlight .stat-unit { color: rgba(255,255,255,0.5); }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 12px rgba(34,51,59,0.07);
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--ink);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .section-header h3 { font-size: 14px; font-weight: 700; }
+  .count-badge {
+    background: var(--teal);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .res-row {
+    border-bottom: 1px solid var(--cream-2);
+    padding: 14px 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 16px;
+    align-items: start;
+  }
+  .res-row:last-child { border-bottom: none; }
+  .res-name { font-weight: 700; font-size: 14px; }
+  .res-meta { font-size: 12px; color: var(--ink-2); opacity: 0.65; margin-top: 3px; }
+  .res-room { font-size: 13px; color: var(--ink); margin-top: 5px; }
+  .res-note { font-size: 12px; color: #888; margin-top: 3px; }
+  .res-date {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink);
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .status-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s, transform .1s;
+    user-select: none;
+  }
+  .status-badge:hover { opacity: 0.75; transform: scale(1.04); }
+  .status-badge:active { transform: scale(0.97); }
+  .status-ใหม่       { background: #fff3cd; color: #856404; }
+  .status-ติดต่อแล้ว   { background: #cce5ff; color: #004085; }
+  .status-ยืนยันจอง    { background: #d4edda; color: #155724; }
+  .status-ยกเลิก      { background: #f8d7da; color: #842029; }
+  .res-row.cancelled .res-name,
+  .res-row.cancelled .res-room { opacity: 0.4; }
+
+  .empty {
+    text-align: center;
+    color: var(--ink-2);
+    opacity: 0.4;
+    padding: 32px 0;
+    font-size: 14px;
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--ink-2);
+    opacity: 0.4;
+    font-size: 15px;
+  }
+  .error-state {
+    background: #fff0f0;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    color: #c0392b;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(34,51,59,0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(34,51,59,0.18);
+    position: relative;
+  }
+  .modal h3 { font-size: 16px; font-weight: 800; margin-bottom: 18px; }
+  .modal-close {
+    position: absolute;
+    top: 18px; right: 20px;
+    background: var(--cream-2);
+    border: none;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  @media (max-width: 680px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 400px) {
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏠 The Base Hua Hin — คำขอจอง</h1>
+  <div class="header-right">
+    <span id="lastUpdated">กำลังโหลด...</span>
+    <button class="refresh-btn" onclick="init()">🔄 รีเฟรช</button>
+  </div>
+</header>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="search-bar">
+    <input type="text" id="searchInput" oninput="onSearchInput(this.value)" placeholder="ค้นหาชื่อลูกค้า หรือเบอร์โทร...">
+  </div>
+  <div id="content"><div class="loading-state">กำลังโหลดข้อมูล...</div></div>
+</div>
+
+<script>
+let allReservations = [];
+
+let searchQuery = "";
+function onSearchInput(val) {
+  searchQuery = val.trim().toLowerCase();
+  render(allReservations);
+}
+function matchesSearch(r) {
+  if (!searchQuery) return true;
+  return (r.name || "").toLowerCase().includes(searchQuery) || (r.phone || "").toString().includes(searchQuery);
+}
+
+const STATUS_CYCLE = ["ใหม่", "ติดต่อแล้ว", "ยืนยันจอง", "ยกเลิก"];
+
+function floorOf(roomid) {
+  const id = String(roomid || "").toLowerCase();
+  if (id.includes("567")) return "5-7";
+  if (id.includes("234")) return "2-4";
+  return "-";
+}
+
+function parseTimestamp(str) {
+  if (!str || str === "-") return null;
+  const d = new Date(str);
+  if (!isNaN(d)) {
+    if (d.getFullYear() > 2500) {
+      return new Date(d.getFullYear() - 543, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+    }
+    return d;
+  }
+  const m = String(str).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m) {
+    const year = parseInt(m[3]) > 2500 ? parseInt(m[3]) - 543 : parseInt(m[3]);
+    return new Date(year, parseInt(m[2]) - 1, parseInt(m[1]), parseInt(m[4]), parseInt(m[5]), parseInt(m[6] || 0));
+  }
+  return null;
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isThisMonth(r) {
+  const ts = parseTimestamp(r.timestamp);
+  if (!ts) return false;
+  const now = new Date();
+  return ts.getFullYear() === now.getFullYear() && ts.getMonth() === now.getMonth();
+}
+
+function isUpcomingMoveIn(r) {
+  if (!r.moveindate || r.status === "ยกเลิก") return false;
+  const today = todayISO();
+  const in30 = new Date(); in30.setDate(in30.getDate() + 30);
+  const in30ISO = in30.toISOString().slice(0, 10);
+  const d = String(r.moveindate).slice(0, 10);
+  return d >= today && d <= in30ISO;
+}
+
+function sumInRange(reservations, fromMs, toMs) {
+  return reservations.reduce((acc, r) => {
+    const ts = parseTimestamp(r.timestamp);
+    if (!ts) return acc;
+    const t = ts.getTime();
+    if (t >= fromMs && t < toMs) acc.count++;
+    return acc;
+  }, { count: 0 });
+}
+
+function renderComparisonHTML(reservations) {
+  const now = Date.now();
+  const DAY = 86400000;
+  const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+  const todayMs = startOfToday.getTime();
+
+  const periods = [
+    { label: "วันนี้ vs เมื่อวาน (ถึงตอนนี้)", cur: sumInRange(reservations, todayMs, now), prev: sumInRange(reservations, todayMs - DAY, todayMs) },
+    { label: "7 วันล่าสุด vs 7 วันก่อนหน้า", cur: sumInRange(reservations, now - 7 * DAY, now), prev: sumInRange(reservations, now - 14 * DAY, now - 7 * DAY) },
+    { label: "30 วันล่าสุด vs 30 วันก่อนหน้า", cur: sumInRange(reservations, now - 30 * DAY, now), prev: sumInRange(reservations, now - 60 * DAY, now - 30 * DAY) },
+  ];
+
+  return periods.map(p => {
+    let pct, cls;
+    if (p.prev.count > 0) {
+      pct = (p.cur.count - p.prev.count) / p.prev.count * 100;
+      cls = pct > 0.5 ? "up" : pct < -0.5 ? "down" : "flat";
+    } else {
+      pct = p.cur.count > 0 ? 100 : 0;
+      cls = p.cur.count > 0 ? "up" : "flat";
+    }
+    const arrow = cls === "up" ? "↑" : cls === "down" ? "↓" : "→";
+    return `
+    <div class="compare-row">
+      <div>
+        <div class="compare-label">${p.label}</div>
+        <div class="compare-values">${p.cur.count} คำขอ เทียบกับ ${p.prev.count} คำขอ</div>
+      </div>
+      <div class="compare-delta ${cls}">${arrow} ${Math.abs(pct).toFixed(0)}%</div>
+    </div>`;
+  }).join("");
+}
+
+function resRowHTML(r) {
+  const status = r.status || "ใหม่";
+  const row = String(r.row || "");
+  return `
+    <div class="res-row${status === 'ยกเลิก' ? ' cancelled' : ''}">
+      <div>
+        <div class="res-name">${r.name || "-"}</div>
+        <div class="res-meta">📞 ${r.phone || "-"}${r.email ? " &nbsp;·&nbsp; ✉️ " + r.email : ""}</div>
+        <div class="res-room">🛏 ${r.roomname || r.roomid || "-"} &nbsp;·&nbsp; ⏱ ${r.duration === "12+" ? "มากกว่า 12 เดือน" : (r.duration || "-") + " เดือน"}</div>
+        ${r.note ? `<div class="res-note">📝 ${r.note}</div>` : ""}
+        <button class="status-badge status-${status}" onclick="updateStatus(this,'${row}')">${status}</button>
+      </div>
+      <div class="res-date">${r.moveindate || "-"}</div>
+    </div>`;
+}
+
+async function updateStatus(btn, row) {
+  const current = btn.textContent.trim();
+  const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length];
+  btn.textContent = next;
+  btn.className = `status-badge status-${next}`;
+  const resRow = btn.closest(".res-row");
+  if (resRow) resRow.classList.toggle("cancelled", next === "ยกเลิก");
+  if (!row) return;
+  try {
+    const token = sessionStorage.getItem("dash_token");
+    await fetch(API_BASE + "/api/admin/update-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ row: Number(row), status: next }),
+    });
+  } catch(e) { console.log("Status update failed:", e); }
+}
+
+function openModal(type) {
+  const overlay = document.getElementById("modalOverlay");
+  const title = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+
+  if (type === "all") {
+    title.textContent = "📋 คำขอจองทั้งหมด";
+    body.innerHTML = allReservations.length === 0
+      ? '<div class="empty">ยังไม่มีคำขอจอง</div>'
+      : allReservations.slice().reverse().map(r => resRowHTML(r)).join("");
+  } else if (type === "month") {
+    title.textContent = "🆕 คำขอใหม่เดือนนี้";
+    const list = allReservations.filter(isThisMonth);
+    body.innerHTML = list.length === 0
+      ? '<div class="empty">ยังไม่มีคำขอในเดือนนี้</div>'
+      : list.slice().reverse().map(r => resRowHTML(r)).join("");
+  } else if (type === "floors") {
+    title.textContent = "🏢 สัดส่วนห้อง ชั้น 2-4 vs ชั้น 5-7";
+    const f234 = allReservations.filter(r => floorOf(r.roomid) === "2-4");
+    const f567 = allReservations.filter(r => floorOf(r.roomid) === "5-7");
+    body.innerHTML = `
+      <div class="res-row"><div class="res-name">ชั้น 2-4</div><div class="res-date">${f234.length} คำขอ</div></div>
+      <div class="res-row"><div class="res-name">ชั้น 5-7</div><div class="res-date">${f567.length} คำขอ</div></div>
+    `;
+  } else if (type === "upcoming") {
+    title.textContent = "📅 เข้าพักใน 30 วันข้างหน้า";
+    const list = allReservations.filter(isUpcomingMoveIn).sort((a,b) => String(a.moveindate).localeCompare(String(b.moveindate)));
+    body.innerHTML = list.length === 0
+      ? '<div class="empty">ไม่มีรายการเข้าพักในช่วงนี้</div>'
+      : list.map(r => resRowHTML(r)).join("");
+  }
+
+  overlay.classList.add("open");
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById("modalOverlay") && e.target !== document.querySelector(".modal-close")) return;
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.getElementById("modalOverlay").classList.remove("open"); });
+
+async function loadData() {
+  const token = sessionStorage.getItem("dash_token");
+  const res = await fetch(API_BASE + "/api/admin/reservations", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status === 401) {
+    sessionStorage.removeItem("dash_token");
+    location.reload();
+    throw new Error("Unauthorized");
+  }
+  const list = await res.json();
+  return (Array.isArray(list) ? list : []).map(r => {
+    const normalized = {};
+    Object.keys(r).forEach(k => normalized[k.toLowerCase()] = r[k]);
+    return normalized;
+  });
+}
+
+function render(reservations) {
+  allReservations = reservations;
+
+  const total = reservations.length;
+  const newThisMonth = reservations.filter(isThisMonth).length;
+  const f234 = reservations.filter(r => floorOf(r.roomid) === "2-4").length;
+  const f567 = reservations.filter(r => floorOf(r.roomid) === "5-7").length;
+  const upcoming = reservations.filter(isUpcomingMoveIn);
+
+  const filteredAll = reservations.filter(matchesSearch);
+  const filteredUpcoming = upcoming.filter(matchesSearch).sort((a,b) => String(a.moveindate).localeCompare(String(b.moveindate)));
+
+  document.getElementById("content").innerHTML = `
+    <div class="stats">
+      <div class="stat-card highlight" onclick="openModal('all')">
+        <div class="stat-label">คำขอจองทั้งหมด ↗</div>
+        <div class="stat-value">${total.toLocaleString()}</div>
+        <div class="stat-unit">รายการ</div>
+      </div>
+      <div class="stat-card" onclick="openModal('month')">
+        <div class="stat-label">คำขอใหม่เดือนนี้ ↗</div>
+        <div class="stat-value">${newThisMonth.toLocaleString()}</div>
+        <div class="stat-unit">รายการ</div>
+      </div>
+      <div class="stat-card" onclick="openModal('floors')">
+        <div class="stat-label">ชั้น 2-4 : ชั้น 5-7 ↗</div>
+        <div class="stat-value">${f234} : ${f567}</div>
+        <div class="stat-unit">สัดส่วนคำขอ</div>
+      </div>
+      <div class="stat-card" onclick="openModal('upcoming')">
+        <div class="stat-label">เข้าพักใน 30 วันข้างหน้า ↗</div>
+        <div class="stat-value">${upcoming.length.toLocaleString()}</div>
+        <div class="stat-unit">รายการ</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-header">
+        <h3>📅 เข้าพักใน 30 วันข้างหน้า</h3>
+        <span class="count-badge">${filteredUpcoming.length} รายการ</span>
+      </div>
+      ${filteredUpcoming.length === 0
+        ? '<div class="empty">ไม่มีรายการเข้าพักในช่วงนี้</div>'
+        : filteredUpcoming.map(r => resRowHTML(r)).join("")
+      }
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="section-header">
+        <h3>📋 คำขอจองล่าสุด</h3>
+        <span class="count-badge">${filteredAll.length} รายการ</span>
+      </div>
+      ${filteredAll.length === 0
+        ? '<div class="empty">ยังไม่มีคำขอจอง</div>'
+        : filteredAll.slice().reverse().slice(0, 20).map(r => resRowHTML(r)).join("")
+      }
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>📊 เทียบกับช่วงก่อนหน้า</h3>
+      ${renderComparisonHTML(reservations)}
+    </div>
+  `;
+
+  const now = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("lastUpdated").textContent = `อัพเดต ${now} น.`;
+}
+
+let refreshTimer;
+async function init() {
+  clearTimeout(refreshTimer);
+  document.getElementById("lastUpdated").textContent = "กำลังโหลด...";
+  try {
+    const reservations = await loadData();
+    render(reservations);
+    refreshTimer = setTimeout(init, 5 * 60 * 1000);
+  } catch(e) {
+    document.getElementById("content").innerHTML = `
+      <div class="error-state">
+        โหลดข้อมูลไม่ได้ — ตรวจสอบว่า Apps Script deploy ถูกต้องและตั้งสิทธิ์เป็น <b>"ทุกคน"</b><br><br>
+        <button onclick="init()" style="margin-top:12px;padding:8px 20px;border-radius:8px;border:none;background:#c0392b;color:#fff;cursor:pointer;font-weight:700;">ลองใหม่</button>
+      </div>`;
+  }
+}
+
+if (sessionStorage.getItem("dash_token")) init();
+</script>
+</body>
+</html>
