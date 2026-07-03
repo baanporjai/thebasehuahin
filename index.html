@@ -97,6 +97,10 @@
     <div class="gallery-strip">
       <img src="Images/swimmingpool.jpg" alt="Rooftop pool">
       <img src="Images/fitness.jpg" alt="Fitness area">
+      <img src="Images/วิวดาดฟ้า.jpg" alt="Rooftop deck mountain view">
+      <img src="Images/เก้าอี้ดาดฟ้า.jpg" alt="Rooftop lounge chairs">
+      <img src="Images/วิวห้องพัก.jpg" alt="Room balcony mountain view">
+      <img src="Images/วิวห้องพัก1.jpg" alt="Room balcony mountain view 2">
       <img src="Images/ดาดฟ้า.jpg" alt="Rooftop deck">
       <img src="Images/view.jpg" alt="Mountain view">
     </div>
@@ -109,6 +113,7 @@
       <span class="eyebrow" data-i18n="rooms_eyebrow">ห้องพัก</span>
       <h2 class="section-title" data-i18n="rooms_title">เลือกห้องพักที่ใช่สำหรับคุณ</h2>
       <p class="section-sub center" data-i18n="rooms_sub">ห้องพักขนาด 34 ตร.ม. เท่ากันทั้ง 2 แบบ ต่างกันที่โทนสีผนังและระดับชั้น</p>
+      <p class="section-sub center" style="margin-top:6px;font-weight:700;color:var(--coral-dark);" data-i18n="price_daily_note">หรือรายวัน 700 บาท/คืน</p>
     </div>
     <div class="room-grid" id="room-grid"></div>
   </div>
@@ -122,6 +127,15 @@
         <span class="eyebrow" data-i18n="location_eyebrow">ที่ตั้ง</span>
         <h2 class="section-title" data-i18n="location_title">ที่ตั้งสะดวก ใกล้ตัวเมืองหัวหิน</h2>
         <p data-i18n="location_p">23/613 ซ.หมู่บ้านทางรถไฟตะวันตก ต.หัวหิน อ.หัวหิน จ.ประจวบคีรีขันธ์ 77110 เดินทางสะดวก ใกล้แหล่งอำนวยความสะดวกต่างๆ ในตัวเมืองหัวหิน</p>
+        <div style="margin-bottom:22px;">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;" data-i18n="location_nearby_label">สถานที่ใกล้เคียง</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="pill">เขาหินเหล็กไฟ (Khao Hin Lek Fai)</span>
+            <span class="pill">ศาลหัวหิน (City Pillar Shrine)</span>
+            <span class="pill">Hua Hin Market Village</span>
+            <span class="pill">Blu'port</span>
+          </div>
+        </div>
         <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=The+Base+Hua+Hin+Apartment" data-i18n="location_btn_map">เปิดใน Google Maps</a>
       </div>
     </div>
@@ -224,6 +238,11 @@
 <script src="js/rooms.js"></script>
 <script src="js/i18n.js"></script>
 <script>
+function priceHTML(r){
+  if(!r.price) return `<span class="price-pill contact">${t("price_contact")}</span>`;
+  return `<span class="price-pill">${t("price_from")} ฿${r.price.toLocaleString()} <small>${t("price_month_unit")}</small></span>`;
+}
+
 function renderRooms(){
   const grid = document.getElementById("room-grid");
   if(!grid) return;
@@ -233,13 +252,17 @@ function renderRooms(){
         <img src="${r.images[0]}" alt="${r.name[currentLang] || r.name.th}">
         <span class="floor-badge">${t("room_floor_label")} ${r.floors}</span>
       </div>
+      ${r.images.length > 1 ? `
+      <div class="thumb-strip">
+        ${r.images.map(img => `<img src="${img}" onclick="this.closest('.room-card').querySelector('.thumb img').src='${img}'" alt="">`).join("")}
+      </div>` : ""}
       <div class="accent-bar"></div>
       <div class="rc-body">
         <div class="rc-name">${r.name[currentLang] || r.name.th}</div>
         <div class="rc-tag">${r.tag[currentLang] || r.tag.th}</div>
         <div class="rc-meta"><span>${r.sqm} ${t("room_sqm_label")}</span></div>
         <div class="rc-bottom">
-          <span class="price-pill contact">${t("price_contact")}</span>
+          ${priceHTML(r)}
           <a class="btn btn-primary btn-sm" href="reserve.html?room=${r.id}">${t("room_view_btn")}</a>
         </div>
       </div>

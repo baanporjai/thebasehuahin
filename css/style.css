@@ -148,6 +148,9 @@ nav.main-nav a.btn-primary:hover{color:#fff;}
   border-radius:999px;padding:6px 14px;font-size:13px;font-weight:800;color:var(--ink);
   box-shadow:var(--shadow-sm);
 }
+.room-card .thumb-strip{display:flex;gap:6px;padding:8px 10px 0;background:#fff;}
+.room-card .thumb-strip img{width:52px;height:38px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.7;transition:opacity .15s ease;}
+.room-card .thumb-strip img:hover{opacity:1;}
 .room-card .accent-bar{height:6px;width:100%;}
 .room-card.accent-teal .accent-bar{background:var(--teal);}
 .room-card.accent-coral .accent-bar{background:var(--coral);}

@@ -5,7 +5,7 @@ const ROOMS = [
     floors: "2-4",
     accent: "teal",
     sqm: 34,
-    price: null,
+    price: 6200,
     name: {
       th: "ห้องพัก ชั้น 2-4",
       en: "Room — Floors 2-4",
@@ -18,14 +18,14 @@ const ROOMS = [
       zh: "薄荷绿主题墙，山景",
       ru: "Мятная акцентная стена, вид на горы"
     },
-    images: ["Images/Floor234.jpg"]
+    images: ["Images/Floor234.jpg", "Images/วิวห้องพัก1.jpg"]
   },
   {
     id: "floor567",
     floors: "5-7",
     accent: "coral",
     sqm: 34,
-    price: null,
+    price: 6200,
     name: {
       th: "ห้องพัก ชั้น 5-7",
       en: "Room — Floors 5-7",
@@ -38,7 +38,7 @@ const ROOMS = [
       zh: "蜜桃珊瑚色主题墙，更高楼层视野",
       ru: "Коралловая акцентная стена, вид с высокого этажа"
     },
-    images: ["Images/Floor567.jpg", "Images/Floor567-2.jpg"]
+    images: ["Images/Floor567.jpg", "Images/Floor567-2.jpg", "Images/Floor567-3.jpg", "Images/Floor567-4.jpg", "Images/Floor567-5.jpg", "Images/วิวห้องพัก.jpg"]
   }
 ];
 
