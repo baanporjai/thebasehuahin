@@ -1,2 +1,5 @@
-# URL จำง่ายสำหรับหน้าแอดมิน (Cloudflare Pages อ่านไฟล์นี้อัตโนมัติ)
-/admin    /dashboard.html    200
+# /admin ตอนนี้ถูก intercept โดย Cloudflare Worker Route
+# (thebasehuahin.com/admin* -> thebasehuahin-admin.vercel.app, ดู
+# cloudflare-admin-proxy-worker.js) ซึ่งทำงานก่อนไฟล์นี้เสมอ — ไม่ต้อง
+# ใส่ rule ให้ /admin ที่นี่แล้ว เพราะ dashboard.html เดิมถูกแทนที่ด้วย
+# ระบบหลังบ้าน Next.js ตัวใหม่ทั้งหมด
