@@ -263,12 +263,12 @@ document.getElementById("reserveForm").addEventListener("submit", async function
     document.getElementById("reserve-success").style.display = "block";
     const summaryRows = reserveType === "monthly" ? `
       <div class="sr"><span>${t("reserve_success_room")}</span><span>${room.name[currentLang] || room.name.th}</span></div>
-      <div class="sr"><span>${t("reserve_success_movein")}</span><span>${movein}</span></div>
+      <div class="sr"><span>${t("reserve_success_movein")}</span><span>${formatDateHuman(movein)}</span></div>
       <div class="sr"><span>${t("reserve_success_duration")}</span><span>${duration === "12+" ? t("reserve_dur_more") : duration + " " + (currentLang === "th" ? "เดือน" : "mo")}</span></div>
     ` : `
       <div class="sr"><span>${t("reserve_success_room")}</span><span>${room.name[currentLang] || room.name.th}</span></div>
-      <div class="sr"><span>${t("reserve_success_checkin")}</span><span>${checkin}</span></div>
-      <div class="sr"><span>${t("reserve_success_checkout")}</span><span>${checkout}</span></div>
+      <div class="sr"><span>${t("reserve_success_checkin")}</span><span>${formatDateHuman(checkin)}</span></div>
+      <div class="sr"><span>${t("reserve_success_checkout")}</span><span>${formatDateHuman(checkout)}</span></div>
     `;
     document.getElementById("success-summary").innerHTML = summaryRows;
   }catch(err){

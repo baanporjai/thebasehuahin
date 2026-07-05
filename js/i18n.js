@@ -131,6 +131,21 @@ const I18N = {
 
 let currentLang = localStorage.getItem("tbh_lang") || "th";
 
+/**
+ * "15 กรกฎาคม 2569" / "15 July 2026" / etc. — day-month-year order in every
+ * language (rather than each locale's own conventional order), per request.
+ * Thai shows the Buddhist year; other languages show the Gregorian year.
+ */
+function formatDateHuman(isoStr){
+  if(!isoStr) return "-";
+  const d = new Date(isoStr + "T00:00:00");
+  if(isNaN(d)) return isoStr;
+  const day = d.getDate();
+  const month = new Intl.DateTimeFormat(currentLang, { month: "long" }).format(d);
+  const year = currentLang === "th" ? d.getFullYear() + 543 : d.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 function t(key){
   const entry = I18N[key];
   if(!entry) return key;
