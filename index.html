@@ -74,7 +74,7 @@
       </div>
     </div>
     <div class="hero-img-wrap">
-      <img src="Images/thebase.jpg" alt="The Base Hua Hin Apartment building">
+      <img class="zoomable" src="Images/thebase.jpg" alt="The Base Hua Hin Apartment building">
     </div>
   </div>
 </section>
@@ -95,14 +95,14 @@
       <div class="feature-card"><div class="icon">🕐</div><h4 data-i18n="amen6_h">เปิดบริการตลอด 24 ชั่วโมง</h4><p data-i18n="amen6_p">ทีมงานพร้อมดูแลและให้บริการทุกช่วงเวลา</p></div>
     </div>
     <div class="gallery-strip">
-      <img src="Images/swimmingpool.jpg" alt="Rooftop pool">
-      <img src="Images/fitness.jpg" alt="Fitness area">
-      <img src="Images/วิวดาดฟ้า.jpg" alt="Rooftop deck mountain view">
-      <img src="Images/เก้าอี้ดาดฟ้า.jpg" alt="Rooftop lounge chairs">
-      <img src="Images/วิวห้องพัก.jpg" alt="Room balcony mountain view">
-      <img src="Images/วิวห้องพัก1.jpg" alt="Room balcony mountain view 2">
-      <img src="Images/ดาดฟ้า.jpg" alt="Rooftop deck">
-      <img src="Images/view.jpg" alt="Mountain view">
+      <img class="zoomable" src="Images/swimmingpool.jpg" alt="Rooftop pool">
+      <img class="zoomable" src="Images/fitness.jpg" alt="Fitness area">
+      <img class="zoomable" src="Images/วิวดาดฟ้า.jpg" alt="Rooftop deck mountain view">
+      <img class="zoomable" src="Images/เก้าอี้ดาดฟ้า.jpg" alt="Rooftop lounge chairs">
+      <img class="zoomable" src="Images/วิวห้องพัก.jpg" alt="Room balcony mountain view">
+      <img class="zoomable" src="Images/วิวห้องพัก1.jpg" alt="Room balcony mountain view 2">
+      <img class="zoomable" src="Images/ดาดฟ้า.jpg" alt="Rooftop deck">
+      <img class="zoomable" src="Images/view.jpg" alt="Mountain view">
     </div>
   </div>
 </section>
@@ -122,7 +122,7 @@
 <section id="location">
   <div class="container">
     <div class="location-grid">
-      <img src="Images/map.jpg" alt="แผนที่ The Base Hua Hin Apartment">
+      <img class="zoomable" src="Images/map.jpg" alt="แผนที่ The Base Hua Hin Apartment">
       <div class="location-info">
         <span class="eyebrow" data-i18n="location_eyebrow">ที่ตั้ง</span>
         <h2 class="section-title" data-i18n="location_title">ที่ตั้งสะดวก ใกล้ตัวเมืองหัวหิน</h2>
@@ -235,9 +235,34 @@
   <div class="foot-bottom" data-i18n="footer_rights">© 2026 The Base Hua Hin Apartment</div>
 </footer>
 
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox()">
+  <button class="lightbox-close" type="button" aria-label="Close" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
+
 <script src="js/rooms.js"></script>
 <script src="js/i18n.js"></script>
 <script>
+function openLightbox(src, alt){
+  const overlay = document.getElementById("lightbox-overlay");
+  const img = document.getElementById("lightbox-img");
+  img.src = src;
+  img.alt = alt || "";
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeLightbox(){
+  document.getElementById("lightbox-overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.addEventListener("click", function(e){
+  const img = e.target.closest("img.zoomable");
+  if(img) openLightbox(img.currentSrc || img.src, img.alt);
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape") closeLightbox();
+});
+
 function priceHTML(r){
   if(!r.price) return `<span class="price-pill contact">${t("price_contact")}</span>`;
   return `<span class="price-pill">${t("price_from")} ฿${r.price.toLocaleString()} <small>${t("price_month_unit")}</small></span>`;
@@ -249,7 +274,7 @@ function renderRooms(){
   grid.innerHTML = ROOMS.map(r => `
     <div class="room-card accent-${r.accent}">
       <div class="thumb">
-        <img src="${r.images[0]}" alt="${r.name[currentLang] || r.name.th}">
+        <img class="zoomable" src="${r.images[0]}" alt="${r.name[currentLang] || r.name.th}">
         <span class="floor-badge">${t("room_floor_label")} ${r.floors}</span>
       </div>
       ${r.images.length > 1 ? `
