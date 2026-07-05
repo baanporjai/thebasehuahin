@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.thebasehuahin.admin",
+    "sha256_cert_fingerprints": ["1D:09:C0:1D:A9:A7:C1:23:2F:B3:77:D9:A9:61:08:B0:EE:75:2D:38:25:49:4E:F4:33:F9:AC:31:95:25:63:06"]
+  }
+}]
