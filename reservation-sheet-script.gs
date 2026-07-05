@@ -15,11 +15,14 @@ function doPost(e) {
 
   const values = {
     timestamp: new Date(),
+    type: data.type === 'daily' ? 'รายวัน' : 'รายเดือน',
     name: data.name || '',
     phone: data.phone || '',
     email: data.email || '',
     roomid: data.roomId || '',
     roomname: data.roomName || '',
+    checkindate: data.checkInDate || '',
+    checkoutdate: data.checkOutDate || '',
     moveindate: data.moveInDate || '',
     duration: data.duration || '',
     note: data.note || '',

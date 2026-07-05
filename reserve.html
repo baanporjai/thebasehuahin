@@ -43,6 +43,19 @@
     <div id="reserve-form-wrap">
       <form class="reserve-form" id="reserveForm">
         <div class="field">
+          <label data-i18n="reserve_type_label">ต้องการจองแบบไหน?</label>
+          <div class="reserve-type-toggle" id="reserve-type-toggle">
+            <button type="button" class="rt-option" data-type="monthly" onclick="setReserveType('monthly')">
+              <span data-i18n="reserve_type_monthly">รายเดือน</span>
+            </button>
+            <button type="button" class="rt-option" data-type="daily" onclick="setReserveType('daily')">
+              <span data-i18n="reserve_type_daily">รายวัน</span>
+            </button>
+          </div>
+          <p class="reserve-hint" id="reserve-type-hint"></p>
+        </div>
+
+        <div class="field">
           <label data-i18n="reserve_room_label">เลือกแบบห้อง</label>
           <div class="room-choice" id="room-choice"></div>
         </div>
@@ -62,20 +75,35 @@
           <input type="email" id="f-email">
         </div>
 
-        <div class="field">
-          <label data-i18n="reserve_movein">วันที่ต้องการเข้าพัก</label>
-          <input type="date" id="f-movein" required>
+        <div id="monthly-fields">
+          <div class="field">
+            <label data-i18n="reserve_movein">วันที่ต้องการเข้าพัก</label>
+            <input type="date" id="f-movein">
+          </div>
+
+          <div class="field">
+            <label data-i18n="reserve_duration">ระยะเวลาเช่า</label>
+            <select id="f-duration">
+              <option value="3" data-i18n="reserve_dur_3">3 เดือน</option>
+              <option value="6" data-i18n="reserve_dur_6">6 เดือน</option>
+              <option value="12" data-i18n="reserve_dur_12">12 เดือน</option>
+              <option value="12+" data-i18n="reserve_dur_more">มากกว่า 12 เดือน</option>
+            </select>
+            <p class="reserve-hint" data-i18n="reserve_duration_hint">สัญญาเช่ารายเดือนขั้นต่ำ 3 เดือน · มัดจำ 1 เดือน (เท่ากับค่าเช่า)</p>
+          </div>
         </div>
 
-        <div class="field">
-          <label data-i18n="reserve_duration">ระยะเวลาเช่า</label>
-          <select id="f-duration">
-            <option value="3" data-i18n="reserve_dur_3">3 เดือน</option>
-            <option value="6" data-i18n="reserve_dur_6">6 เดือน</option>
-            <option value="12" data-i18n="reserve_dur_12">12 เดือน</option>
-            <option value="12+" data-i18n="reserve_dur_more">มากกว่า 12 เดือน</option>
-          </select>
-          <p class="reserve-hint" data-i18n="reserve_duration_hint">สัญญาเช่ารายเดือนขั้นต่ำ 3 เดือน · มัดจำ 1 เดือน (เท่ากับค่าเช่า) · ต้องการรายวันเริ่มต้น 700 บาท/คืน กรุณาโทรหรืออีเมลติดต่อโดยตรง</p>
+        <div id="daily-fields" style="display:none;">
+          <div class="grid-2">
+            <div class="field">
+              <label data-i18n="reserve_checkin">วันเช็คอิน</label>
+              <input type="date" id="f-checkin" onchange="updateCheckoutMin()">
+            </div>
+            <div class="field">
+              <label data-i18n="reserve_checkout">วันเช็คเอาท์</label>
+              <input type="date" id="f-checkout">
+            </div>
+          </div>
         </div>
 
         <div class="field">
@@ -122,6 +150,37 @@ const API_URL = "https://REPLACE-ME.workers.dev/api/reserve";
 
 const params = new URLSearchParams(location.search);
 let selectedRoom = params.get("room") || ROOMS[0].id;
+let reserveType = params.get("type") === "daily" ? "daily" : "monthly";
+
+// Hooked by js/i18n.js's applyI18n() so switching language also refreshes
+// the type hint text (it's set via textContent, not a data-i18n attribute).
+function renderReserveSummary(){
+  setReserveType(reserveType);
+}
+
+function updateCheckoutMin(){
+  const checkin = document.getElementById("f-checkin").value;
+  if(!checkin) return;
+  const d = new Date(checkin + "T00:00:00");
+  d.setDate(d.getDate() + 1);
+  const checkoutInput = document.getElementById("f-checkout");
+  const minCheckout = d.toISOString().slice(0, 10);
+  checkoutInput.min = minCheckout;
+  if(checkoutInput.value && checkoutInput.value <= checkin) checkoutInput.value = minCheckout;
+}
+
+function setReserveType(type){
+  reserveType = type;
+  document.querySelectorAll(".rt-option").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-type") === type);
+  });
+  document.getElementById("monthly-fields").style.display = type === "monthly" ? "" : "none";
+  document.getElementById("daily-fields").style.display = type === "daily" ? "" : "none";
+  document.getElementById("f-movein").required = type === "monthly";
+  document.getElementById("f-checkin").required = type === "daily";
+  document.getElementById("f-checkout").required = type === "daily";
+  document.getElementById("reserve-type-hint").textContent = type === "daily" ? t("reserve_type_daily_hint") : "";
+}
 
 function renderRoomChoice(){
   const wrap = document.getElementById("room-choice");
@@ -145,6 +204,8 @@ document.getElementById("reserveForm").addEventListener("submit", async function
   const email = document.getElementById("f-email").value.trim();
   const movein = document.getElementById("f-movein").value;
   const duration = document.getElementById("f-duration").value;
+  const checkin = document.getElementById("f-checkin").value;
+  const checkout = document.getElementById("f-checkout").value;
   const note = document.getElementById("f-note").value.trim();
 
   if(!selectedRoom){
@@ -157,8 +218,13 @@ document.getElementById("reserveForm").addEventListener("submit", async function
     errBox.style.display = "block";
     return;
   }
-  if(!movein){
+  if(reserveType === "monthly" && !movein){
     errBox.textContent = t("reserve_validation_date");
+    errBox.style.display = "block";
+    return;
+  }
+  if(reserveType === "daily" && (!checkin || !checkout || checkout <= checkin)){
+    errBox.textContent = t("reserve_validation_checkinout");
     errBox.style.display = "block";
     return;
   }
@@ -169,29 +235,42 @@ document.getElementById("reserveForm").addEventListener("submit", async function
 
   const room = getRoom(selectedRoom);
 
+  const payload = {
+    type: reserveType,
+    name, phone, email,
+    roomId: selectedRoom,
+    roomName: room.name.th,
+    note,
+  };
+  if(reserveType === "monthly"){
+    payload.moveInDate = movein;
+    payload.duration = duration;
+  }else{
+    payload.checkInDate = checkin;
+    payload.checkOutDate = checkout;
+  }
+
   try{
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name, phone, email,
-        roomId: selectedRoom,
-        roomName: room.name.th,
-        moveInDate: movein,
-        duration,
-        note
-      })
+      body: JSON.stringify(payload)
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || "failed");
 
     document.getElementById("reserve-form-wrap").style.display = "none";
     document.getElementById("reserve-success").style.display = "block";
-    document.getElementById("success-summary").innerHTML = `
+    const summaryRows = reserveType === "monthly" ? `
       <div class="sr"><span>${t("reserve_success_room")}</span><span>${room.name[currentLang] || room.name.th}</span></div>
       <div class="sr"><span>${t("reserve_success_movein")}</span><span>${movein}</span></div>
       <div class="sr"><span>${t("reserve_success_duration")}</span><span>${duration === "12+" ? t("reserve_dur_more") : duration + " " + (currentLang === "th" ? "เดือน" : "mo")}</span></div>
+    ` : `
+      <div class="sr"><span>${t("reserve_success_room")}</span><span>${room.name[currentLang] || room.name.th}</span></div>
+      <div class="sr"><span>${t("reserve_success_checkin")}</span><span>${checkin}</span></div>
+      <div class="sr"><span>${t("reserve_success_checkout")}</span><span>${checkout}</span></div>
     `;
+    document.getElementById("success-summary").innerHTML = summaryRows;
   }catch(err){
     errBox.textContent = t("reserve_err_fail");
     errBox.style.display = "block";
@@ -199,6 +278,8 @@ document.getElementById("reserveForm").addEventListener("submit", async function
     submitBtn.textContent = t("reserve_submit_btn");
   }
 });
+
+setReserveType(reserveType);
 
 renderRoomChoice();
 </script>

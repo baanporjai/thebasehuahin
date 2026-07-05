@@ -7,8 +7,9 @@
 1. Go to [Google Sheets](https://sheets.google.com/) and create a new blank spreadsheet — name it something like "The Base Hua Hin — Reservations".
 2. In row 1, add these column headers exactly (lowercase, one per cell, in this order):
    ```
-   timestamp | name | phone | email | roomid | roomname | moveindate | duration | note | status
+   timestamp | type | name | phone | email | roomid | roomname | checkindate | checkoutdate | moveindate | duration | note | status
    ```
+   `type` is "รายวัน" or "รายเดือน". Daily requests fill `checkindate`/`checkoutdate` and leave `moveindate`/`duration` blank; monthly requests are the other way around.
 3. Copy the Sheet's ID from its URL — the long string between `/d/` and `/edit`, e.g.:
    ```
    https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz/edit

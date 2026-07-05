@@ -63,9 +63,18 @@ async function handleReserve(request, env) {
     return json({ ok: false, error: 'Invalid JSON' }, 400, CORS_HEADERS);
   }
 
-  if (!res || !res.name || !res.phone || !res.roomId || !res.moveInDate) {
+  if (!res || !res.name || !res.phone || !res.roomId) {
     return json({ ok: false, error: 'Missing required fields' }, 400, CORS_HEADERS);
   }
+
+  const type = res.type === 'daily' ? 'daily' : 'monthly';
+  if (type === 'monthly' && !res.moveInDate) {
+    return json({ ok: false, error: 'Missing required fields' }, 400, CORS_HEADERS);
+  }
+  if (type === 'daily' && (!res.checkInDate || !res.checkOutDate)) {
+    return json({ ok: false, error: 'Missing required fields' }, 400, CORS_HEADERS);
+  }
+  res.type = type;
 
   if (!env.LINE_CHANNEL_ACCESS_TOKEN || !env.LINE_TARGET_ID) {
     return json({ ok: false, error: 'Server not configured' }, 500, CORS_HEADERS);
@@ -236,14 +245,22 @@ function json(obj, status, headers) {
 
 function buildLineText(res) {
   const lines = [];
-  lines.push('🆕 คำขอจองห้องพักใหม่ — The Base Hua Hin Apartment');
+  const isDaily = res.type === 'daily';
+  lines.push(isDaily
+    ? '🆕 คำขอจองห้องพักรายวันใหม่ — The Base Hua Hin Apartment'
+    : '🆕 คำขอจองห้องพักรายเดือนใหม่ — The Base Hua Hin Apartment');
   lines.push('');
   lines.push(`ห้อง: ${res.roomName || res.roomId}`);
   lines.push(`ชื่อ: ${res.name}`);
   lines.push(`โทร: ${res.phone}`);
   if (res.email) lines.push(`อีเมล: ${res.email}`);
-  lines.push(`วันที่ต้องการเข้าพัก: ${res.moveInDate}`);
-  lines.push(`ระยะเวลาเช่า: ${res.duration === '12+' ? 'มากกว่า 12 เดือน' : res.duration + ' เดือน'}`);
+  if (isDaily) {
+    lines.push(`เช็คอิน: ${res.checkInDate}`);
+    lines.push(`เช็คเอาท์: ${res.checkOutDate}`);
+  } else {
+    lines.push(`วันที่ต้องการเข้าพัก: ${res.moveInDate}`);
+    lines.push(`ระยะเวลาเช่า: ${res.duration === '12+' ? 'มากกว่า 12 เดือน' : res.duration + ' เดือน'}`);
+  }
   if (res.note) lines.push(`หมายเหตุ: ${res.note}`);
   return lines.join('\n');
 }
