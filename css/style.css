@@ -1,5 +1,7 @@
 /* ===== The Base Hua Hin Apartment ===== */
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Google Fonts is loaded via <link> in the HTML <head> (with preconnect),
+   not @import here — @import blocks this stylesheet from applying until
+   the imported one finishes loading, adding an avoidable round-trip. */
 
 :root{
   --teal:#2eb8bd;
