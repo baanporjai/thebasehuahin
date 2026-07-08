@@ -136,8 +136,13 @@ nav.main-nav a.btn-primary:hover{color:#fff;}
 .feature-card p{font-size:14px;color:var(--muted);margin:0;}
 
 /* ===== Gallery strip ===== */
-.gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px;}
-.gallery-strip img{border-radius:14px;aspect-ratio:4/3;object-fit:cover;box-shadow:var(--shadow-sm);}
+/* Bento-style mosaic: a large hero tile + a wide tile + regular tiles, so
+   each photo keeps a size that suits its composition instead of every shot
+   being forced into the same crop. */
+.gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:170px;gap:16px;margin-top:36px;}
+.gallery-strip img{border-radius:14px;width:100%;height:100%;object-fit:cover;box-shadow:var(--shadow-sm);}
+.gallery-strip img:nth-child(1){grid-column:span 2;grid-row:span 2;}
+.gallery-strip img:nth-child(6){grid-column:span 2;}
 
 /* ===== Room cards ===== */
 .room-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:40px;}
@@ -257,7 +262,7 @@ footer .foot-links li{margin-bottom:8px;}
 @media (max-width:980px){
   .hero-inner,.location-grid{grid-template-columns:1fr;}
   .features-grid{grid-template-columns:repeat(2,1fr);}
-  .gallery-strip{grid-template-columns:repeat(2,1fr);}
+  .gallery-strip{grid-template-columns:repeat(2,1fr);grid-auto-rows:140px;}
   .room-grid{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr;}
   nav.main-nav{display:none;}
