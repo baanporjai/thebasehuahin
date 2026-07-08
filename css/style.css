@@ -173,7 +173,12 @@ nav.main-nav a.btn-primary:hover{color:#fff;}
 
 /* ===== Location ===== */
 .location-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-top:36px;}
-.location-grid img{border-radius:var(--radius);box-shadow:var(--shadow);width:100%;aspect-ratio:1600/959;object-fit:cover;}
+.location-grid img{
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  width:100%;max-width:420px;aspect-ratio:1600/959;object-fit:cover;
+  justify-self:start;transition:transform .25s ease;
+}
+.location-grid img:hover{transform:scale(1.06);}
 .location-info p{color:var(--muted);font-size:15px;margin-bottom:22px;line-height:1.8;}
 .location-info .addr{font-weight:700;color:var(--ink);}
 
