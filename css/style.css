@@ -175,7 +175,7 @@ nav.main-nav a.btn-primary:hover{color:#fff;}
 .location-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-top:36px;}
 .location-grid img{
   border-radius:var(--radius);box-shadow:var(--shadow);
-  width:420px;aspect-ratio:1600/959;object-fit:contain;background:#fff;
+  width:420px;aspect-ratio:1600/939;object-fit:contain;background:#fff;
   justify-self:start;align-self:start;transition:transform .25s ease;
 }
 .location-grid img:hover{transform:scale(1.06);}
